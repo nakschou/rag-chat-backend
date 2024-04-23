@@ -430,6 +430,7 @@ def confirm_id():
     try:
         id = request.args.get('id', '')
         if r.exists(id):
+            print(r.get(id))
             response = app.response_class(
                 response=json.dumps({"exists": True}),
                 status=200,
