@@ -290,15 +290,15 @@ class PineconeRM(dspy.Retrieve):
         return dspy.Prediction(
             passages=text_strings
         )
-
+    
 class GenerateAnswer(dspy.Signature):
-    """Answer questions with as ground-truth information as possible, in the 
-    voice of the provided filter. """
+    """Answer questions with as ground-truth information as possible, with the added filter. 
+    If no filter is provided, just give your response as usual."""
 
     context = dspy.InputField(desc="may contain relevant facts")
     question = dspy.InputField()
-    voice = dspy.InputField(desc="the voice in which the answer should be generated. If nothing is provided, no need to filter.")
-    answer = dspy.OutputField(desc="complete, detailed answer to the question in max 3 sentences.")
+    filter = dspy.InputField(desc="the filter through which the answer should be generated.")
+    answer = dspy.OutputField(desc="complete, detailed answer to the question in max 3 sentences. just the answer, no additional text.")
 
 class RAG(dspy.Module):
     """Retrieve, Answer, Generate model for question answering."""
@@ -310,7 +310,7 @@ class RAG(dspy.Module):
     
     def forward(self, question, voice=""):
         context = self.retrieve(question).passages
-        prediction = self.generate_answer(context=context, question=question, voice=voice)
+        prediction = self.generate_answer(context=context, question=question, filter=voice)
         return dspy.Prediction(context=context, answer=prediction.answer)
 
 @app.route('/rag_qa', methods=['POST'])
