@@ -32,7 +32,7 @@ load_dotenv()
 # Initialize the Pinecone client and index
 PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
 pc = Pinecone(api_key=PINECONE_API_KEY)
-index = pc.Index("rag-chat")
+PINECONE_INDEX = pc.Index("rag-chat")
 
 # Initialize the Voyage AI client for vector embeds
 VOYAGE_API_KEY = os.getenv('VOYAGE_API_KEY')
@@ -227,7 +227,7 @@ def pdf_to_pinecone():
             full_dct = {"id": thisid, "values": vector, "metadata": metadata}
             vectors.append(full_dct)
         print("checkpoint 3:", vectors)
-        dct = index.upsert(vectors)
+        dct = PINECONE_INDEX.upsert(vectors)
         #Check if all the chunks were uploaded
         if dct["upserted_count"] == len(chunks):
             response = app.response_class(
@@ -276,13 +276,13 @@ class PineconeRM(dspy.Retrieve):
         voyage_call = vo.embed(query_redone, model="voyage-large-2", input_type="query")
         query_vector = voyage_call.embeddings[0]
         if not self.id:
-            result = index.query(
+            result = PINECONE_INDEX.query(
                 vector=query_vector,
                 top_k=self.k,
                 include_metadata=True
             )
         else:
-            result = index.query(
+            result = PINECONE_INDEX.query(
                 vector=query_vector,
                 filter={
                     "pdf_id": self.id
