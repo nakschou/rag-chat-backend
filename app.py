@@ -326,6 +326,7 @@ def rag_qa():
         query = data.get('query', '')
         rag = RAG(id=id)
         call = rag(question=query)
+        print(call)
         text = call.answer
         add_to_redis(id, text, False)
         response = app.response_class(
@@ -334,8 +335,6 @@ def rag_qa():
             mimetype='application/json'
         )
         response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Methods', 'POST')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         return response
     except Exception as e:
         response = app.response_class(
