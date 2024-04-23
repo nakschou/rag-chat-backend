@@ -371,9 +371,7 @@ def update_redis():
         return response
     
 def add_to_redis(id: str, message: str, user: bool):
-    print("pushing" + json.dumps({"text": message, "user": user}))
     r.lpush(id + "_list", json.dumps({"text": message, "user": user}))
-    print(r.lrange(id + "_list", 0, -1))
 
 @app.route('/get_messages', methods=['GET'])
 def get_messages():
@@ -382,25 +380,13 @@ def get_messages():
     """
     try:
         id = request.args.get('id', '')
-        for i in range(num_tries):
-            if r.exists(id):
-                messages = r.lrange(id + "_list", 0, -1)
-                print(messages)
-                response = app.response_class(
-                    response=json.dumps({"messages": messages}),
-                    status=200,
-                    mimetype='application/json'
-                )
-                response.headers.add('Access-Control-Allow-Origin', '*')
-                return response
-            time.sleep(1)
+        messages = r.lrange(id + "_list", 0, -1)
         response = app.response_class(
-            response=json.dumps({"messages": []}),
-            status=500,
+            response=json.dumps({"messages": messages}),
+            status=200,
             mimetype='application/json'
         )
         response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
     except Exception as e:
         response = app.response_class(
             response=json.dumps({"message": f"An error occurred: {str(e)}"}),
