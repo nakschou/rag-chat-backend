@@ -327,8 +327,8 @@ def rag_qa():
         id = data.get('id', '')
         query = data.get('query', '')
         voice = data.get('voice', '')
-        rag = RAG(id=id, voice=voice)
-        call = rag(question=query)
+        rag = RAG(id=id)
+        call = rag(question=query, voice=voice)
         text = call.answer
         add_to_redis(id, text, False)
         print(text)
