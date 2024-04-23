@@ -381,6 +381,7 @@ def get_messages():
     try:
         id = request.args.get('id', '')
         messages = r.lrange(id + "_list", 0, -1)
+        print(messages)
         response = app.response_class(
             response=json.dumps({"messages": messages}),
             status=200,
