@@ -233,6 +233,8 @@ def pdf_to_pinecone():
                 status=200,
                 mimetype='application/json'
             )
+            response.headers.add('Access-Control-Allow-Methods', 'POST')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
             response.headers.add('Access-Control-Allow-Origin', '*')
             return response
         else:
@@ -311,17 +313,11 @@ class RAG(dspy.Module):
         prediction = self.generate_answer(context=context, question=question)
         return dspy.Prediction(context=context, answer=prediction.answer)
 
-@app.route('/rag_qa', methods=['POST', 'OPTIONS'])
+@app.route('/rag_qa', methods=['POST'])
 def rag_qa():
     """
     Given a question and an ID, retrieves the top k passages from Pinecone and generates an answer using the RAG model.
     """
-    if request.method == 'OPTIONS':
-        response = app.response_class(status=200)
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        return response
     try:
         id = request.args.get('id', '')
         query = request.args.get('query', '')
@@ -335,6 +331,8 @@ def rag_qa():
             mimetype='application/json'
         )
         response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         return response
     except Exception as e:
         response = app.response_class(
@@ -345,14 +343,8 @@ def rag_qa():
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
-@app.route('/update_redis', methods=['POST', 'OPTIONS'])
+@app.route('/update_redis', methods=['POST'])
 def update_redis():
-    if request.method == 'OPTIONS':
-        response = app.response_class(status=200)
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-        return response
     try:
         id = request.args.get('id', '')
         message = request.args.get('message', '')
@@ -363,6 +355,8 @@ def update_redis():
             status=200,
             mimetype='application/json'
         )
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
     except Exception as e:
@@ -388,6 +382,7 @@ def get_messages():
         for i in range(num_tries):
             if r.exists(id):
                 messages = r.lrange(id + "_list", 0, -1)
+                print(messages)
                 response = app.response_class(
                     response=json.dumps({"messages": messages}),
                     status=200,
@@ -425,6 +420,8 @@ def generate_id():
             status=200,
             mimetype='application/json'
         )
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
     except Exception as e:
