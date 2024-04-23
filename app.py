@@ -380,8 +380,8 @@ def get_messages():
     """
     try:
         id = request.args.get('id', '')
-        messages = r.lrange(id + "_list", 0, -1)
-        print(messages)
+        print(id)
+        messages = [message.decode('utf-8') for message in r.lrange(id + "_list", 0, -1)]
         response = app.response_class(
             response=json.dumps({"messages": messages}),
             status=200,
@@ -389,6 +389,7 @@ def get_messages():
         )
         response.headers.add('Access-Control-Allow-Origin', '*')
     except Exception as e:
+        app.logger.error(f"Failed to retrieve messages: {str(e)}")
         response = app.response_class(
             response=json.dumps({"message": f"An error occurred: {str(e)}"}),
             status=500,
