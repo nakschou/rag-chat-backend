@@ -296,11 +296,12 @@ class PineconeRM(dspy.Retrieve):
         )
 
 class GenerateAnswer(dspy.Signature):
-    """Answer questions with as ground-truth information as possible. If a 
-    question isn't asked, respond like a chatbot would."""
+    """Answer questions with as ground-truth information as possible, in the 
+    voice of the provided filter. If a question isn't asked, respond like a chatbot would. """
 
     context = dspy.InputField(desc="may contain relevant facts")
     question = dspy.InputField()
+    voice = dspy.InputField(desc="the voice in which the answer should be generated. If not provided, generate a chatbot-like response.")
     answer = dspy.OutputField(desc="complete, detailed answer to the question in max 3 sentences.")
 
 class RAG(dspy.Module):
@@ -311,10 +312,9 @@ class RAG(dspy.Module):
         self.retrieve = PineconeRM(id=id, k=num_passages)
         self.generate_answer = dspy.Predict(GenerateAnswer)
     
-    def forward(self, question):
+    def forward(self, question, voice=""):
         context = self.retrieve(question).passages
-        prediction = self.generate_answer(context=context, question=question)
-        print(prediction)
+        prediction = self.generate_answer(context=context, question=question, voice=voice)
         return dspy.Prediction(context=context, answer=prediction.answer)
 
 @app.route('/rag_qa', methods=['POST'])
@@ -326,9 +326,9 @@ def rag_qa():
         data = request.json
         id = data.get('id', '')
         query = data.get('query', '')
-        rag = RAG(id=id)
+        voice = data.get('voice', '')
+        rag = RAG(id=id, voice=voice)
         call = rag(question=query)
-        print(call)
         text = call.answer
         add_to_redis(id, text, False)
         response = app.response_class(
