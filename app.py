@@ -380,14 +380,14 @@ def get_messages():
     """
     try:
         id = request.args.get('id', '')
-        print(id)
-        messages = []
+        messages = r.lrange(id + "_list", 0, -1)
         response = app.response_class(
             response=json.dumps({"messages": messages}),
             status=200,
             mimetype='application/json'
         )
         response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
     except Exception as e:
         app.logger.error(f"Failed to retrieve messages: {str(e)}")
         response = app.response_class(
@@ -454,3 +454,6 @@ def confirm_id():
         )
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
+    
+if __name__ == '__main__':
+    app.run(debug=True)
