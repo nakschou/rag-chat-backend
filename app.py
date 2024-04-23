@@ -380,7 +380,7 @@ def add_to_redis(id: str, message: str, user: bool):
     else:
         messages = []
     messages.append({"text": message, "user": user})
-    print("setting to" + str(messages))
+    print(f"setting id {id} to" + str(messages))
     r.set(id, json.dumps(messages))
 
 @app.route('/get_messages', methods=['GET'])
