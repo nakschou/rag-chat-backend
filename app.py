@@ -351,6 +351,8 @@ def update_redis():
         id = request.args.get('id', '')
         message = request.args.get('message', '')
         user = request.args.get('user', False)
+        print(type(id), id)
+        print(type(message), message)
         print(type(user), user)
         add_to_redis(id, message, user)
         response = app.response_class(
