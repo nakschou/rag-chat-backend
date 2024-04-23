@@ -297,7 +297,7 @@ class GenerateAnswer(dspy.Signature):
 
     context = dspy.InputField(desc="may contain relevant facts")
     question = dspy.InputField()
-    voice = dspy.InputField(desc="the voice in which the answer should be generated. If not provided, respond as usual.")
+    voice = dspy.InputField(desc="the voice in which the answer should be generated. If nothing is provided, no need to filter.")
     answer = dspy.OutputField(desc="complete, detailed answer to the question in max 3 sentences.")
 
 class RAG(dspy.Module):
