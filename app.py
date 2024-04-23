@@ -13,9 +13,11 @@ from openai import OpenAI
 import redis
 import time
 import uuid
+from flask_cors import CORS
 
 # Initialize the Flask app
 app = Flask(__name__)
+CORS(app)
 
 # Load the environment variables
 load_dotenv()
