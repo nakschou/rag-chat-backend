@@ -187,6 +187,7 @@ def pdf_to_pinecone():
         for i, sentence in enumerate(sentences):
             sentence['combined_sentence_embedding'] = combined_embeddings[i]
         distances, sentences = calculate_cosine_distances(sentences)
+        print("checkpoint 1:", distances, sentences)
         breakpoint_distance_threshold = np.percentile(distances, breakpoint_percentile_threshold)
         indices_above_thresh = [i for i, x in enumerate(distances) if x > breakpoint_distance_threshold] # The indices of those breakpoints on your list
 
@@ -213,7 +214,7 @@ def pdf_to_pinecone():
         if start_index < len(sentences):
             combined_text = ' '.join([d['sentence'] for d in sentences[start_index:]])
             chunks.append(combined_text)
-
+        print("checkpoint 2:", chunks)
         # grouped_sentences now contains the chunked sentences
         chunk_embeddings = vo.embed(chunks, model="voyage-large-2", input_type="document").embeddings
         id_name = id
@@ -225,6 +226,7 @@ def pdf_to_pinecone():
             metadata = {"text": chunk, "pdf_id": id_name}
             full_dct = {"id": thisid, "values": vector, "metadata": metadata}
             vectors.append(full_dct)
+        print("checkpoint 3:", vectors)
         dct = index.upsert(vectors)
         #Check if all the chunks were uploaded
         if dct["upserted_count"] == len(chunks):
