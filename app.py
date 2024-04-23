@@ -351,14 +351,13 @@ def update_redis():
         id = request.args.get('id', '')
         message = request.args.get('message', '')
         user = request.args.get('user', False)
+        print(type(user), user)
         add_to_redis(id, message, user)
         response = app.response_class(
             response=json.dumps({"message": "Successfully added message to Redis."}),
             status=200,
             mimetype='application/json'
         )
-        response.headers.add('Access-Control-Allow-Methods', 'POST')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
     except Exception as e:
@@ -411,8 +410,6 @@ def generate_id():
             status=200,
             mimetype='application/json'
         )
-        response.headers.add('Access-Control-Allow-Methods', 'POST')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
     except Exception as e:
