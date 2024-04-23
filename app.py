@@ -331,6 +331,7 @@ def rag_qa():
         call = rag(question=query)
         text = call.answer
         add_to_redis(id, text, False)
+        print(text)
         response = app.response_class(
             response=json.dumps({"answer": text}),
             status=200,
