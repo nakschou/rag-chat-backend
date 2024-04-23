@@ -293,7 +293,6 @@ class PineconeRM(dspy.Retrieve):
                 top_k=self.k,
                 include_metadata=True
             )
-        dspy.configure(lm=gpt4_turbo)
         text_strings = [i["metadata"]["text"] for i in result["matches"]]
         return dspy.Prediction(
             passages=text_strings
@@ -304,19 +303,20 @@ class GenerateAnswer(dspy.Signature):
 
     context = dspy.InputField(desc="may contain relevant facts")
     question = dspy.InputField()
-    answer = dspy.OutputField(desc="Answer to the question, max 3 sentences.")
+    answer = dspy.OutputField(desc="complete, detailed answer to the question in max 3 sentences.")
 
 class RAG(dspy.Module):
     """Retrieve, Answer, Generate model for question answering."""
-    def __init__(self, num_passages=3, id:str = ""):
+    def __init__(self, num_passages=2, id:str = ""):
         super().__init__()
 
         self.retrieve = PineconeRM(id=id, k=num_passages)
-        self.generate_answer = dspy.ChainOfThought(GenerateAnswer)
+        self.generate_answer = dspy.Predict(GenerateAnswer)
     
     def forward(self, question):
         context = self.retrieve(question).passages
         prediction = self.generate_answer(context=context, question=question)
+        print(prediction)
         return dspy.Prediction(context=context, answer=prediction.answer)
 
 @app.route('/rag_qa', methods=['POST'])
