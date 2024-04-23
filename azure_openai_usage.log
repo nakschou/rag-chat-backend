@@ -37,3 +37,6 @@ HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
  * Debugger is active!
  * Debugger PIN: 155-067-181
  * Detected change in 'C:\\Users\\Home\\Desktop\\projects\\infinitus-full\\infinitus-backend\\app.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 155-067-181

@@ -380,7 +380,7 @@ def get_messages():
     """
     try:
         id = request.args.get('id', '')
-        messages = r.lrange(id + "_list", 0, -1)
+        messages = [message.decode('utf-8') for message in r.lrange(id + "_list", 0, -1)]
         response = app.response_class(
             response=json.dumps({"messages": messages}),
             status=200,
