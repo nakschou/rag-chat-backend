@@ -237,8 +237,6 @@ def pdf_to_pinecone():
                 status=200,
                 mimetype='application/json'
             )
-            response.headers.add('Access-Control-Allow-Methods', 'POST')
-            response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
             response.headers.add('Access-Control-Allow-Origin', '*')
             return response
         else:
@@ -301,7 +299,7 @@ class PineconeRM(dspy.Retrieve):
 
 class GenerateAnswer(dspy.Signature):
     """Answer questions with as ground-truth information as possible. If a 
-    question isn't asked, return a default answer."""
+    question isn't asked, respond like a chatbot would."""
 
     context = dspy.InputField(desc="may contain relevant facts")
     question = dspy.InputField()
