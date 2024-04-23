@@ -375,13 +375,9 @@ def update_redis():
         return response
     
 def add_to_redis(id: str, message: str, user: bool):
-    if r.exists(id):
-        messages = json.loads(r.get(id))
-    else:
-        messages = []
-    messages.append({"text": message, "user": user})
-    print(f"setting id {id} to" + str(messages))
-    r.set(id, json.dumps(messages))
+    r.set(id, True)
+    r.lpush(id + "_list", json.dumps({"text": message, "user": user}))
+    print(f"setting id {id} to" + json.dumps({"text": message, "user": user}))
 
 @app.route('/get_messages', methods=['GET'])
 def get_messages():
@@ -392,7 +388,7 @@ def get_messages():
         id = request.args.get('id', '')
         for i in range(num_tries):
             if r.exists(id):
-                messages = json.loads(r.get(id))
+                messages = r.lrange(id + "_list", 0, -1)
                 response = app.response_class(
                     response=json.dumps({"messages": messages}),
                     status=200,
@@ -424,7 +420,7 @@ def generate_id():
     """
     try:
         id = str(uuid.uuid4())
-        r.set(id, json.dumps([]))
+        r.set(id, True)
         response = app.response_class(
             response=json.dumps({"id": id}),
             status=200,
