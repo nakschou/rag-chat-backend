@@ -140,7 +140,7 @@ def pdf_to_pinecone():
         response: The Flask response object.
     """
     try:
-        data = request.json
+        data = request.form
         id = data.get('id', '')
         if 'file' not in request.files:
             response = app.response_class(
@@ -150,7 +150,7 @@ def pdf_to_pinecone():
             )
             response.headers.add('Access-Control-Allow-Origin', '*')
             return response
-        file = request.files['file']
+        file = request.files.get('file')
         if file.filename == '':
             response = app.response_class(
                 response=json.dumps({"message": f"No file found"}),
