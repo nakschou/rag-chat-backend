@@ -142,23 +142,8 @@ def pdf_to_pinecone():
     try:
         data = request.form
         id = data.get('id', '')
-        if 'file' not in request.files:
-            response = app.response_class(
-                response=json.dumps({"message": f"No file found"}),
-                status=500,
-                mimetype='application/json'
-            )
-            response.headers.add('Access-Control-Allow-Origin', '*')
-            return response
         file = request.files.get('file')
-        if file.filename == '':
-            response = app.response_class(
-                response=json.dumps({"message": f"No file found"}),
-                status=500,
-                mimetype='application/json'
-            )
-            response.headers.add('Access-Control-Allow-Origin', '*')
-            return response
+        print(file)
         if file and allowed_file(file.filename):
             # Process the file directly without saving it
             text = pdf_to_text(file)
