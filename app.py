@@ -36,6 +36,7 @@ breakpoint_percentile_threshold = 90 #percentile at which to split the document 
 # OpenAI and dspy setup
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 gpt4 = dspy.OpenAI(model="gpt-4", api_key=OPENAI_API_KEY)
+gpt4_turbo = dspy.OpenAI(model="gpt-4-turbo", api_key=OPENAI_API_KEY)
 dspy.configure(lm=gpt4)
 client = OpenAI()
 
@@ -139,7 +140,8 @@ def pdf_to_pinecone():
         response: The Flask response object.
     """
     try:
-        id = request.args.get('id', '')
+        data = request.json
+        id = data.get('id', '')
         if 'file' not in request.files:
             response = app.response_class(
                 response=json.dumps({"message": f"No file found"}),
@@ -271,6 +273,7 @@ class PineconeRM(dspy.Retrieve):
         self.id = id
 
     def forward(self, query:str) -> dspy.Prediction:
+        dspy.configure(lm=gpt4)
         queryref = dspy.Predict(QueryReformatter)
         query_redone = queryref(query=query).new_query
         voyage_call = vo.embed(query_redone, model="voyage-large-2", input_type="query")
@@ -290,6 +293,7 @@ class PineconeRM(dspy.Retrieve):
                 top_k=self.k,
                 include_metadata=True
             )
+        dspy.configure(lm=gpt4_turbo)
         text_strings = [i["metadata"]["text"] for i in result["matches"]]
         return dspy.Prediction(
             passages=text_strings
@@ -300,7 +304,7 @@ class GenerateAnswer(dspy.Signature):
 
     context = dspy.InputField(desc="may contain relevant facts")
     question = dspy.InputField()
-    answer = dspy.OutputField(desc="Strong but concise answer to the question.")
+    answer = dspy.OutputField(desc="Answer to the question, max 3 sentences.")
 
 class RAG(dspy.Module):
     """Retrieve, Answer, Generate model for question answering."""
