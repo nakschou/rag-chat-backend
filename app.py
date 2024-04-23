@@ -420,7 +420,7 @@ def generate_id():
     """
     try:
         id = str(uuid.uuid4())
-        r.set(id, True)
+        r.set(id, "placehold")
         response = app.response_class(
             response=json.dumps({"id": id}),
             status=200,
