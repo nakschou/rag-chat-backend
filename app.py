@@ -19,6 +19,13 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+# Ensure there's a folder to save the uploaded files
+UPLOAD_FOLDER = 'uploads/'
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 # Load the environment variables
 load_dotenv()
 
@@ -47,13 +54,13 @@ num_tries = 5
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ['pdf']
 
-def pdf_to_text(file_stream) -> str:
+def pdf_to_text(file_path) -> str:
     """
-    Converts a PDF file to text from a file stream. This function handles exceptions
+    Converts a PDF file to text using a file path. This function handles exceptions
     during the PDF read process and logs errors for troubleshooting.
 
     Args:
-        file_stream: A file-like object containing the PDF data.
+        file_path: A string representing the path to the PDF file.
     
     Returns:
         str: The text extracted from the PDF file, or an error message if an exception occurs.
@@ -61,7 +68,7 @@ def pdf_to_text(file_stream) -> str:
     text_parts = []
 
     try:
-        with pdfplumber.open(file_stream) as pdf:
+        with pdfplumber.open(file_path) as pdf:
             for page in pdf.pages:
                 page_text = page.extract_text()
                 if page_text:
@@ -143,10 +150,13 @@ def pdf_to_pinecone():
         data = request.form
         id = data.get('id', '')
         file = request.files.get('file')
-        print(file)
         if file and allowed_file(file.filename):
             # Process the file directly without saving it
-            text = pdf_to_text(file)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(file_path)
+            # Extract text from PDF
+            text = pdf_to_text(file_path)
+            print(text)
         else:
             response = app.response_class(
                 response=json.dumps({"message": f"Wrong file type."}),
@@ -163,6 +173,7 @@ def pdf_to_pinecone():
             )
             response.headers.add('Access-Control-Allow-Origin', '*')
             return response
+        os.remove(file_path)
         single_sentences_list = re.split(r'(?<=[.?!])\s+', text)
         sentences = [{'sentence': x, 'index' : i} for i, x in enumerate(single_sentences_list)]
         #Semantic chunking
