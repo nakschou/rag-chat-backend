@@ -259,7 +259,8 @@ def pdf_to_pinecone():
         return response
 
 class QueryReformatter(dspy.Signature):
-    """Given a query, make it more detailed by asking implied subquestions for a vector search."""
+    """Given a query, make it more detailed by asking implied subquestions for a vector search.
+    If there isn't a clear way to make the query more detailed, return the original query."""
 
     query = dspy.InputField()
     new_query = dspy.OutputField(desc="The more detailed version of the query, assuming it is known the information is contained in the writing. ONLY GIVE THE QUERY, no additional text.")
@@ -299,7 +300,8 @@ class PineconeRM(dspy.Retrieve):
         )
 
 class GenerateAnswer(dspy.Signature):
-    """Answer questions with as ground-truth information as possible."""
+    """Answer questions with as ground-truth information as possible. If a 
+    question isn't asked, return a default answer."""
 
     context = dspy.InputField(desc="may contain relevant facts")
     question = dspy.InputField()
