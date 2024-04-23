@@ -348,9 +348,11 @@ def rag_qa():
 @app.route('/update_redis', methods=['POST'])
 def update_redis():
     try:
-        id = request.args.get('id', '')
-        message = request.args.get('message', '')
-        user = request.args.get('user', False)
+        data = request.json
+        print(data)
+        id = data.get('id', '')
+        message = data.get('message', '')
+        user = data.get('user', False)
         print(type(id), id)
         print(type(message), message)
         print(type(user), user)
@@ -429,7 +431,6 @@ def confirm_id():
     try:
         id = request.args.get('id', '')
         if r.exists(id):
-            print(r.get(id))
             response = app.response_class(
                 response=json.dumps({"exists": True}),
                 status=200,
