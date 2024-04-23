@@ -17,7 +17,7 @@ from flask_cors import CORS
 
 # Initialize the Flask app
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://infinitus-frontend.vercel.app"}})
 
 # Ensure there's a folder to save the uploaded files
 UPLOAD_FOLDER = 'uploads/'
