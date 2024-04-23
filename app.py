@@ -371,6 +371,7 @@ def update_redis():
         return response
     
 def add_to_redis(id: str, message: str, user: bool):
+    print("pushing" + json.dumps({"text": message, "user": user}))
     r.lpush(id + "_list", json.dumps({"text": message, "user": user}))
     print(r.lrange(id + "_list", 0, -1))
 
