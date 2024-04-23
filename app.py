@@ -300,7 +300,7 @@ class GenerateAnswer(dspy.Signature):
 
     context = dspy.InputField(desc="may contain relevant facts")
     question = dspy.InputField()
-    answer = dspy.OutputField()
+    answer = dspy.OutputField(desc="Strong but concise answer to the question.")
 
 class RAG(dspy.Module):
     """Retrieve, Answer, Generate model for question answering."""
