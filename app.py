@@ -156,7 +156,6 @@ def pdf_to_pinecone():
             file.save(file_path)
             # Extract text from PDF
             text = pdf_to_text(file_path)
-            print(text)
         else:
             response = app.response_class(
                 response=json.dumps({"message": f"Wrong file type."}),
@@ -294,11 +293,11 @@ class PineconeRM(dspy.Retrieve):
 
 class GenerateAnswer(dspy.Signature):
     """Answer questions with as ground-truth information as possible, in the 
-    voice of the provided filter. If a question isn't asked, respond like a chatbot would. """
+    voice of the provided filter. """
 
     context = dspy.InputField(desc="may contain relevant facts")
     question = dspy.InputField()
-    voice = dspy.InputField(desc="the voice in which the answer should be generated. If not provided, generate a chatbot-like response.")
+    voice = dspy.InputField(desc="the voice in which the answer should be generated. If not provided, respond as usual.")
     answer = dspy.OutputField(desc="complete, detailed answer to the question in max 3 sentences.")
 
 class RAG(dspy.Module):
