@@ -375,9 +375,8 @@ def update_redis():
         return response
     
 def add_to_redis(id: str, message: str, user: bool):
-    r.set(id, True)
     r.lpush(id + "_list", json.dumps({"text": message, "user": user}))
-    print(f"setting id {id} to" + json.dumps({"text": message, "user": user}))
+    print(r.lrange(id + "_list", 0, -1))
 
 @app.route('/get_messages', methods=['GET'])
 def get_messages():
