@@ -321,8 +321,9 @@ def rag_qa():
     Given a question and an ID, retrieves the top k passages from Pinecone and generates an answer using the RAG model.
     """
     try:
-        id = request.args.get('id', '')
-        query = request.args.get('query', '')
+        data = request.json
+        id = data.get('id', '')
+        query = data.get('query', '')
         rag = RAG(id=id)
         call = rag(question=query)
         text = call.answer
@@ -349,13 +350,9 @@ def rag_qa():
 def update_redis():
     try:
         data = request.json
-        print(data)
         id = data.get('id', '')
         message = data.get('message', '')
         user = data.get('user', False)
-        print(type(id), id)
-        print(type(message), message)
-        print(type(user), user)
         add_to_redis(id, message, user)
         response = app.response_class(
             response=json.dumps({"message": "Successfully added message to Redis."}),
