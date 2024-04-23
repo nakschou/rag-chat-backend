@@ -436,3 +436,33 @@ def generate_id():
         )
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
+
+@app.route('/confirm_id', methods=['GET'])
+def confirm_id():
+    """Confirms whether an ID exists in the redis database"""
+    try:
+        id = request.args.get('id', '')
+        if r.exists(id):
+            response = app.response_class(
+                response=json.dumps({"exists": True}),
+                status=200,
+                mimetype='application/json'
+            )
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
+        else:
+            response = app.response_class(
+                response=json.dumps({"exists": False}),
+                status=200,
+                mimetype='application/json'
+            )
+            response.headers.add('Access-Control-Allow-Origin', '*')
+            return response
+    except Exception as e:
+        response = app.response_class(
+            response=json.dumps({"message": f"An error occurred: {str(e)}"}),
+            status=500,
+            mimetype='application/json'
+        )
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
