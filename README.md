@@ -1,4 +1,4 @@
-The project is available to use at [this link](https://infinitus-frontend.vercel.app/).
+The project has been deprecated.
 
 If you would like a better idea of the architecture, I've included a high-level diagram below.
 
